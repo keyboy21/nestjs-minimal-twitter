@@ -16,15 +16,15 @@ import { ZodValidationPipe } from 'src/shared/zodvalidationPipe';
 import { CreatePostDto, createPostSchema } from './dto/create.dto';
 import { EditPostDto, editPostSchema } from './dto/edit.dto';
 import { AuthGuard } from 'src/auth/guard/auth.guard';
-import { CreatePostEntity, EditPostEntity, PostEntity } from './entities'
+import { CreatePostEntity, EditPostEntity, PostEntity } from './entities';
 
 @ApiTags('posts')
 @Controller('posts')
 export class PostController {
-  constructor(private readonly postService: PostService) { }
+  constructor(private readonly postService: PostService) {}
 
   @Get()
-  @ApiOperation({ summary: 'Get all posts', })
+  @ApiOperation({ summary: 'Get all posts' })
   @ApiResponse({ status: HttpStatus.OK, type: [PostEntity] })
   public async getAllPosts() {
     console.log('asdasd');

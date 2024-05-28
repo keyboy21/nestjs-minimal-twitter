@@ -1,4 +1,11 @@
-import { BadRequestException, Body, Controller, HttpStatus, Post, UsePipes } from '@nestjs/common';
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  HttpStatus,
+  Post,
+  UsePipes,
+} from '@nestjs/common';
 import { RegisterUserDto, registersSchema } from './dto/register.dto';
 import { ZodValidationPipe } from 'src/shared/zodvalidationPipe';
 import { LoginUserDto, loginSchema } from './dto/login.dto';
@@ -13,8 +20,8 @@ import { AuthService } from './auth.service';
 export class AuthController {
   constructor(
     private jwtService: JwtService,
-    private authService: AuthService
-  ) { }
+    private authService: AuthService,
+  ) {}
 
   @Post('/register')
   @ApiOperation({ summary: 'Create User' })
@@ -22,13 +29,15 @@ export class AuthController {
   @ApiResponse({
     status: HttpStatus.CREATED,
     description: 'User created',
-    type: RegisterEntity
+    type: RegisterEntity,
   })
   @UsePipes(new ZodValidationPipe(registersSchema))
-  public async regiser(@Body() body: RegisterUserDto): Promise<RegisterUserDto | BadRequestException> {
-    const user = await this.authService.register(body)
+  public async regiser(
+    @Body() body: RegisterUserDto,
+  ): Promise<RegisterUserDto | BadRequestException> {
+    const user = await this.authService.register(body);
 
-    return user
+    return user;
   }
 
   @Post('/login')

@@ -23,20 +23,23 @@ const usernameSchema = z
   .min(4, { message: 'username must be at least 4 characters long' })
   .max(50);
 
-export const registersSchema = z
-  .object({
-    email: z.string().email({ message: 'Invalid email address' }),
-    password: passwordSchema,
-    userName: usernameSchema,
-    name: z.string().min(1, { message: 'name must be at least 1 characters long' }),
-    surname: z.string().min(1, { message: 'surname must be at least 1 characters long' }),
-    image: z.string().optional().nullable(),
-    address: z.object({
-      city: z.string().min(1),
-      country: z.string().min(1),
-      zip: z.string().min(1).optional(),
-    }),
-    birthDate: z.string().date()
-  });
+export const registersSchema = z.object({
+  email: z.string().email({ message: 'Invalid email address' }),
+  password: passwordSchema,
+  userName: usernameSchema,
+  name: z
+    .string()
+    .min(1, { message: 'name must be at least 1 characters long' }),
+  surname: z
+    .string()
+    .min(1, { message: 'surname must be at least 1 characters long' }),
+  image: z.string().optional().nullable(),
+  address: z.object({
+    city: z.string().min(1),
+    country: z.string().min(1),
+    zip: z.string().min(1).optional(),
+  }),
+  birthDate: z.string().date(),
+});
 
 export type RegisterUserDto = z.infer<typeof registersSchema>;

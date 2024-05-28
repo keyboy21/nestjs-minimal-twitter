@@ -1,7 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 class Address {
-
   @ApiProperty({ example: 'New York', description: 'The city of the user' })
   city: string;
 
@@ -42,14 +41,11 @@ export class RegisterEntity {
   image?: string;
 
   @ApiProperty({ description: 'User address' })
-  address: Address
+  address: Address;
 
   @ApiProperty({
     example: '1990-01-01',
     description: 'The birth date of the user',
   })
   birthDate: string;
-
 }
-
-
