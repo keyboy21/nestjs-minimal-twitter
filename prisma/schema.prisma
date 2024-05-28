@@ -1,0 +1,69 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id        Int        @id @default(autoincrement())
+  email     String     @unique
+  userName  String     @unique
+  password  String
+  name      String
+  surname   String
+  image     String?
+  address   Address    @relation(fields: [addressId], references: [id])
+  birthDate String
+  addressId Int        @unique
+  posts     Post[]
+  bookmarks Bookmark[]
+  likes     Like[]
+  createdAt DateTime   @default(now())
+}
+
+model Address {
+  id      Int     @id @default(autoincrement())
+  zip     String?
+  city    String
+  country String
+  User    User?
+}
+
+model Post {
+  id         Int        @id @default(autoincrement())
+  post       String
+  author     User       @relation(fields: [authorId], references: [id])
+  authorId   Int
+  bookmarks  Bookmark[]
+  likes      Like[]
+  createdAt  DateTime   @default(now())
+  editedDate DateTime?
+
+  @@index([authorId])
+}
+
+model Bookmark {
+  id     Int  @id @default(autoincrement())
+  user   User @relation(fields: [userId], references: [id])
+  userId Int
+  post   Post @relation(fields: [postId], references: [id])
+  postId Int
+
+  @@index([userId])
+  @@index([postId])
+}
+
+model Like {
+  id     Int  @id @default(autoincrement())
+  user   User @relation(fields: [userId], references: [id])
+  userId Int
+  post   Post @relation(fields: [postId], references: [id])
+  postId Int
+
+  @@index([userId])
+  @@index([postId])
+}
