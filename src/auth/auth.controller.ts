@@ -6,14 +6,15 @@ import {
   Post,
   UsePipes,
 } from '@nestjs/common';
-import { RegisterUserDto, registersSchema } from './dto/register.dto';
+import { registerUserDto, registersSchema } from './dto/register.dto';
 import { ZodValidationPipe } from 'src/shared/zodvalidationPipe';
-import { LoginUserDto, loginSchema } from './dto/login.dto';
+import { loginUserDto, loginSchema } from './dto/login.dto';
 import { ApiOperation, ApiResponse, ApiTags, ApiBody } from '@nestjs/swagger';
 import { RegisterEntity } from './entities/register.entity';
 import { LoginEntity } from './entities/login.entity';
 import { JwtService } from '@nestjs/jwt';
 import { AuthService } from './auth.service';
+import { AuthConfig } from 'src/configs/auth.config';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -21,7 +22,7 @@ export class AuthController {
   constructor(
     private jwtService: JwtService,
     private authService: AuthService,
-  ) {}
+  ) { }
 
   @Post('/register')
   @ApiOperation({ summary: 'Create User' })
@@ -33,11 +34,10 @@ export class AuthController {
   })
   @UsePipes(new ZodValidationPipe(registersSchema))
   public async regiser(
-    @Body() body: RegisterUserDto,
-  ): Promise<RegisterUserDto | BadRequestException> {
-    const user = await this.authService.register(body);
+    @Body() body: registerUserDto,
+  ): Promise<registerUserDto | BadRequestException> {
+    return await this.authService.register(body);
 
-    return user;
   }
 
   @Post('/login')
@@ -45,9 +45,7 @@ export class AuthController {
   @ApiBody({ type: LoginEntity })
   @ApiResponse({ status: HttpStatus.OK })
   @UsePipes(new ZodValidationPipe(loginSchema))
-  public async login(@Body() body: LoginUserDto) {
-    return {
-      acces_token: this.jwtService.sign(body),
-    };
+  public async login(@Body() body: loginUserDto) {
+    return await this.login(body)
   }
 }

@@ -42,4 +42,4 @@ export const registersSchema = z.object({
   birthDate: z.string().date(),
 });
 
-export type RegisterUserDto = z.infer<typeof registersSchema>;
+export type registerUserDto = z.infer<typeof registersSchema>;

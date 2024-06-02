@@ -2,8 +2,9 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from 'src/prisma.service';
 import { UsersService } from 'src/users/users.service';
-import { RegisterUserDto } from './dto/register.dto';
-import { hash } from '@node-rs/argon2';
+import { registerUserDto } from './dto/register.dto';
+import { AuthTokenPayload } from './types';
+import { loginUserDto } from './dto/login.dto';
 
 @Injectable()
 export class AuthService {
@@ -11,57 +12,40 @@ export class AuthService {
     private jwtService: JwtService,
     private pisma: PrismaService,
     private usersService: UsersService,
-  ) {}
+  ) { }
 
-  async register(
-    payload: RegisterUserDto,
-  ): Promise<RegisterUserDto | BadRequestException> {
+  public async register(
+    payload: registerUserDto,
+  ): Promise<registerUserDto | BadRequestException> {
     const emailExist = await this.usersService.findUserByEmail(payload.email);
 
-    if (emailExist) {
-      return new BadRequestException('User with this email already exist');
-    }
+    if (emailExist) return new BadRequestException('User with this email already exist');
 
     const userNameExist = await this.usersService.findUserByUserName(
       payload.userName,
     );
 
-    if (userNameExist) {
-      return new BadRequestException('User with this userName already exist ');
-    }
+    if (userNameExist) return new BadRequestException('User with this userName already exist ');
 
-    const hashPassword = await this.hashPassword(payload.password);
+    return this.usersService.createUser(payload)
 
-    const user = await this.pisma.user.create({
-      data: {
-        name: payload.name,
-        email: payload.email,
-        surname: payload.surname,
-        userName: payload.userName,
-        birthDate: payload.birthDate,
-        password: hashPassword,
-        // image: payload.image,
-        address: {
-          create: {
-            city: payload.address.city,
-            country: payload.address.country,
-          },
-        },
-      },
-    });
-
-    return {
-      ...user,
-      address: {
-        city: payload.address.city,
-        country: payload.address.country,
-      },
-    };
   }
 
-  private async hashPassword(password: string) {
-    const hashedPassword = await hash(password);
+  public async login(payload: loginUserDto) {
+      const findUserByUserName = this.usersService.findUserByUserName(payload.username)
+  }
 
-    return hashedPassword;
+  private async generateToken(payload: AuthTokenPayload) {
+
+    const accesToken = this.jwtService.sign(payload, {
+      expiresIn: '1d'
+    })
+
+    const regreshToken = this.jwtService.sign(payload, {
+      expiresIn: '3'
+    })
+
+    return { accesToken, regreshToken }
+
   }
 }
