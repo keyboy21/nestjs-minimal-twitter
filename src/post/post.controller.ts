@@ -19,6 +19,7 @@ import { CreatePostDto, createPostSchema } from './dto/create.dto';
 import { EditPostDto, editPostSchema } from './dto/edit.dto';
 import { AuthGuard } from 'src/auth/guard/auth.guard';
 import { CreatePostEntity, EditPostEntity, PostEntity } from './entities';
+import { DeletePostDto, deletePostSchema } from './dto/delete.dto';
 
 @ApiTags('posts')
 @Controller('posts')
@@ -51,19 +52,14 @@ export class PostController {
     return await this.postService.createPost(body);
   }
 
-  @Put(':postId')
+  @Patch(':postId')
   @ApiOperation({ summary: 'Edit post' })
   @ApiBody({ type: EditPostEntity })
   @ApiResponse({ status: HttpStatus.OK, type: EditPostEntity })
   @UsePipes(new ZodValidationPipe(editPostSchema))
   @UseGuards(AuthGuard)
-  public async editPost(
-    @Param('postId') postId: string,
-    @Body() body: EditPostDto,
-  ) {
-
-    console.log('edit post>>>>>>', body);
-
+  public async editPost(@Param('postId') postId: string) {
+    console.log('postId', postId);
     // if (!postId) throw new NotFoundException('Post not found');
     // return await this.postService.editPost(body, +postId);
   }
@@ -71,8 +67,9 @@ export class PostController {
   @Delete(':postId')
   @ApiOperation({ summary: 'Delete post' })
   @ApiResponse({ status: HttpStatus.OK })
+  @UsePipes(new ZodValidationPipe(deletePostSchema))
   @UseGuards(AuthGuard)
-  public async deletePost(@Param('postId') postId: string) {
-    return await this.postService.deletePost(+postId);
+  public async deletePost(@Param('postId') postId: string, body: DeletePostDto) {
+    return await this.postService.deletePost(+postId, body.authorId);
   }
 }

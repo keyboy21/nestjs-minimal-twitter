@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma.service';
 import { CreatePostDto } from './dto/create.dto';
 import { EditPostDto } from './dto/edit.dto';
@@ -34,7 +34,7 @@ export class PostService {
   public async getOnePost(postId: number) {
     const postExists = await this.postExists(postId);
 
-    if (!postExists) throw new NotFoundException('Post not found');
+    if (!postExists) return new NotFoundException('Post not found');
 
     const post = this.prisma.post.findUnique({
       where: {
@@ -48,6 +48,11 @@ export class PostService {
           },
         },
         authorId: true,
+        author: {
+          select: {
+            userName: true,
+          }
+        },
         post: true,
         id: true,
         createdAt: true,
@@ -61,7 +66,11 @@ export class PostService {
   public async editPost(payload: EditPostDto, postId: number) {
     const postExists = await this.postExists(postId);
 
-    if (!postExists) throw new NotFoundException('Post not found');
+    if (!postExists) return new NotFoundException('Post not found');
+
+    const isPostOwner = postExists.authorId === payload.authorId;
+
+    if (!isPostOwner) return new BadRequestException('You are not allowed to edit this post');
 
     await this.prisma.post.update({
       where: {
@@ -75,15 +84,23 @@ export class PostService {
     return payload;
   }
 
-  public async deletePost(postId: number) {
+  public async deletePost(postId: number, authorId: number) {
     const postExists = await this.postExists(postId);
 
-    if (!postExists) throw new NotFoundException('Post not found');
+    if (!postExists) return new NotFoundException('Post not found');
+
+    const isPostOwner = postExists.authorId === authorId;
+
+    if (!isPostOwner) return new BadRequestException('You are not allowed to delete this post');
 
     return await this.prisma.post.delete({
       where: {
         id: postId,
       },
+      include: {
+        bookmarks: true,
+        likes: true,
+      }
     });
   }
 
