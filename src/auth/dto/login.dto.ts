@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 export const loginSchema = z
   .object({
-    username: z
+    userName: z
       .string()
       .min(4, { message: 'username must be at least 3 characters long' }),
     password: z

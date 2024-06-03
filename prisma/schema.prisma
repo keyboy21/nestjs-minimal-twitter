@@ -34,14 +34,14 @@ model Address {
 }
 
 model Post {
-  id         Int        @id @default(autoincrement())
-  post       String
-  author     User       @relation(fields: [authorId], references: [id])
-  authorId   Int
-  bookmarks  Bookmark[]
-  likes      Like[]
-  createdAt  DateTime   @default(now())
-  editedDate DateTime?
+  id        Int        @id @default(autoincrement())
+  post      String
+  author    User       @relation(fields: [authorId], references: [id])
+  authorId  Int
+  bookmarks Bookmark[]
+  likes     Like[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
 
   @@index([authorId])
 }

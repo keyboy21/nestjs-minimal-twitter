@@ -5,10 +5,9 @@ import { hash } from '@node-rs/argon2';
 
 @Injectable()
 export class UsersService {
-  constructor(private prisma: PrismaService) { }
+  constructor(private prisma: PrismaService) {}
 
   public async createUser(payload: registerUserDto): Promise<registerUserDto> {
-
     if (payload.image) {
       // TODO: DO some stuff
     }
@@ -32,7 +31,7 @@ export class UsersService {
       },
     });
 
-    return payload
+    return payload;
   }
 
   public async findUserByEmail(email: string) {

@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   HttpStatus,
+  NotFoundException,
   Param,
   Patch,
   Post,
@@ -27,14 +28,14 @@ export class PostController {
   @ApiOperation({ summary: 'Get all posts' })
   @ApiResponse({ status: HttpStatus.OK, type: [PostEntity] })
   public async getAllPosts() {
-    console.log('asdasd');
+    return await this.postService.getAllPosts();
   }
 
   @Get(':postId')
   @ApiOperation({ summary: 'Get one post' })
   @ApiResponse({ status: HttpStatus.OK, type: PostEntity })
-  public async getOnePost(@Param('postId') postId: number) {
-    console.log('asdasd');
+  public async getOnePost(@Param('postId') postId: string) {
+    return await this.postService.getOnePost(+postId);
   }
 
   @Post()
@@ -46,7 +47,7 @@ export class PostController {
   @ApiResponse({ status: HttpStatus.CREATED, type: CreatePostEntity })
   @UsePipes(new ZodValidationPipe(createPostSchema))
   public async createPost(@Body() body: CreatePostDto) {
-    return body;
+    return await this.postService.createPost(body);
   }
 
   @Patch(':postId')
@@ -58,21 +59,20 @@ export class PostController {
   @UsePipes(new ZodValidationPipe(editPostSchema))
   @ApiResponse({ status: HttpStatus.OK, type: EditPostEntity })
   public async editPost(
-    @Param('postId') postId: number,
+    @Param('postId') postId: string,
     @Body() body: EditPostDto,
   ) {
-    console.log('postId>>>>', postId);
-    return {
-      body,
-      postId,
-    };
+    console.log('edit post>>>>>>', body, postId);
+
+    if (!postId) throw new NotFoundException('Post not found');
+    // return await this.postService.editPost(body, +postId);
   }
 
   @Delete(':postId')
   @UseGuards(AuthGuard)
   @ApiOperation({ summary: 'Delete post' })
   @ApiResponse({ status: HttpStatus.OK })
-  public async deletePost(@Param('postId') postId: number) {
-    return postId;
+  public async deletePost(@Param('postId') postId: string) {
+    return await this.postService.deletePost(+postId);
   }
 }

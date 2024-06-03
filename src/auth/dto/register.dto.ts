@@ -10,9 +10,6 @@ const passwordSchema = z
     message: 'Password must contain at least one uppercase letter',
   })
   .regex(/[0-9]/, { message: 'Password must contain at least one number' })
-  .regex(/[^a-zA-Z0-9]/, {
-    message: 'Password must contain at least one special character',
-  })
   .max(50);
 
 const usernameSchema = z

@@ -12,17 +12,12 @@ import { loginUserDto, loginSchema } from './dto/login.dto';
 import { ApiOperation, ApiResponse, ApiTags, ApiBody } from '@nestjs/swagger';
 import { RegisterEntity } from './entities/register.entity';
 import { LoginEntity } from './entities/login.entity';
-import { JwtService } from '@nestjs/jwt';
 import { AuthService } from './auth.service';
-import { AuthConfig } from 'src/configs/auth.config';
 
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
-  constructor(
-    private jwtService: JwtService,
-    private authService: AuthService,
-  ) { }
+  constructor(private authService: AuthService) {}
 
   @Post('/register')
   @ApiOperation({ summary: 'Create User' })
@@ -37,7 +32,6 @@ export class AuthController {
     @Body() body: registerUserDto,
   ): Promise<registerUserDto | BadRequestException> {
     return await this.authService.register(body);
-
   }
 
   @Post('/login')
@@ -46,6 +40,6 @@ export class AuthController {
   @ApiResponse({ status: HttpStatus.OK })
   @UsePipes(new ZodValidationPipe(loginSchema))
   public async login(@Body() body: loginUserDto) {
-    return await this.login(body)
+    return await this.authService.login(body);
   }
 }
