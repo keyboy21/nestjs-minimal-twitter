@@ -5,7 +5,7 @@ import { EditPostDto } from './dto/edit.dto';
 
 @Injectable()
 export class PostService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) { }
 
   public async getAllPosts() {
     return await this.prisma.post.findMany({

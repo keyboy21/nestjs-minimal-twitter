@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from 'src/prisma.service';
 import { UsersService } from 'src/users/users.service';
@@ -13,73 +13,75 @@ export class AuthService {
     private jwtService: JwtService,
     private pisma: PrismaService,
     private usersService: UsersService,
-  ) {}
+  ) { }
 
-  public async register(
-    payload: registerUserDto,
-  ): Promise<registerUserDto | BadRequestException> {
+  public async register(payload: registerUserDto) {
+
     const emailExist = await this.usersService.findUserByEmail(payload.email);
 
-    if (emailExist)
-      return new BadRequestException('User with this email already exist');
+    if (emailExist) return new BadRequestException('User with this email already exist');
 
     const userNameExist = await this.usersService.findUserByUserName(
       payload.userName,
     );
 
-    if (userNameExist)
-      return new BadRequestException('User with this userName already exist ');
+    if (userNameExist) return new BadRequestException('User with this userName already exist');
 
-    return this.usersService.createUser(payload);
+    const newUser = await this.usersService.createUser(payload);
+
+    const token = await this.generateToken({
+      sub: newUser.id,
+      userName: newUser.userName
+    })
+
+    return token
+
   }
 
-  public async login(
-    payload: loginUserDto,
-  ): Promise<
+  public async login(payload: loginUserDto): Promise<
     { accesToken: string; refreshToken: string } | BadRequestException
   > {
-    const findUserByUserName = await this.usersService.findUserByUserName(
-      payload.userName,
-    );
+
+    const findUserByUserName = await this.usersService.findUserByUserName(payload.userName);
+
     if (!findUserByUserName) return new BadRequestException('User not found');
 
-    const verifyPassword = await verify(
-      findUserByUserName.password,
-      payload.password,
-    );
+    const verifyPassword = await verify(findUserByUserName.password, payload.password,);
 
     if (!verifyPassword) return new BadRequestException('Wrong password');
 
-    const { accesToken, refreshToken } = await this.generateToken({
-      userId: findUserByUserName.id,
+    const tokens = await this.generateToken({
+      sub: findUserByUserName.id,
       userName: findUserByUserName.userName,
     });
 
-    return { accesToken, refreshToken };
+    return tokens;
+  }
+
+  public async refreshToken(refreshToken: string) {
+
+    const payload = await this.jwtService.verify(refreshToken);
+
+    if (!payload) return new BadRequestException('Invalid refresh token');
+
+    const user = await this.pisma.user.findUnique({
+      where: { userName: payload.userName },
+    });
+
+    if (!user) return new UnauthorizedException('User not found');
+
+    const tokens = await this.generateToken({
+      sub: user.id,
+      userName: user.userName
+    })
+
+    return tokens
   }
 
   private async generateToken(payload: AuthTokenPayload) {
-    if (!payload) {
-      throw new Error('Payload is missing');
-    }
 
-    const accesToken = this.jwtService.sign(payload, {
-      expiresIn: '1d',
-      secret: process.env.JWT_SECRET,
-    });
-
-    if (!accesToken) {
-      throw new Error('Failed to generate access token');
-    }
-
-    const refreshToken = this.jwtService.sign(payload, {
-      expiresIn: '3',
-      secret: process.env.JWT_SECRET,
-    });
-
-    if (!refreshToken) {
-      throw new Error('Failed to generate refresh token');
-    }
+    const accesToken = this.jwtService.sign(payload, { expiresIn: '2d' });
+    const refreshToken = this.jwtService.sign(payload, { expiresIn: '1d' });
 
     return { accesToken, refreshToken };
   }

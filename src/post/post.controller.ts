@@ -8,6 +8,7 @@ import {
   Param,
   Patch,
   Post,
+  Put,
   UseGuards,
   UsePipes,
 } from '@nestjs/common';
@@ -22,7 +23,7 @@ import { CreatePostEntity, EditPostEntity, PostEntity } from './entities';
 @ApiTags('posts')
 @Controller('posts')
 export class PostController {
-  constructor(private readonly postService: PostService) {}
+  constructor(private readonly postService: PostService) { }
 
   @Get()
   @ApiOperation({ summary: 'Get all posts' })
@@ -39,39 +40,38 @@ export class PostController {
   }
 
   @Post()
-  @UseGuards(AuthGuard)
   @ApiOperation({ summary: 'Create post' })
   @ApiBody({
     type: CreatePostEntity,
   })
   @ApiResponse({ status: HttpStatus.CREATED, type: CreatePostEntity })
   @UsePipes(new ZodValidationPipe(createPostSchema))
+  @UseGuards(AuthGuard)
   public async createPost(@Body() body: CreatePostDto) {
     return await this.postService.createPost(body);
   }
 
-  @Patch(':postId')
-  @UseGuards(AuthGuard)
+  @Put(':postId')
   @ApiOperation({ summary: 'Edit post' })
-  @ApiBody({
-    type: EditPostEntity,
-  })
-  @UsePipes(new ZodValidationPipe(editPostSchema))
+  @ApiBody({ type: EditPostEntity })
   @ApiResponse({ status: HttpStatus.OK, type: EditPostEntity })
+  @UsePipes(new ZodValidationPipe(editPostSchema))
+  @UseGuards(AuthGuard)
   public async editPost(
     @Param('postId') postId: string,
     @Body() body: EditPostDto,
   ) {
-    console.log('edit post>>>>>>', body, postId);
 
-    if (!postId) throw new NotFoundException('Post not found');
+    console.log('edit post>>>>>>', body);
+
+    // if (!postId) throw new NotFoundException('Post not found');
     // return await this.postService.editPost(body, +postId);
   }
 
   @Delete(':postId')
-  @UseGuards(AuthGuard)
   @ApiOperation({ summary: 'Delete post' })
   @ApiResponse({ status: HttpStatus.OK })
+  @UseGuards(AuthGuard)
   public async deletePost(@Param('postId') postId: string) {
     return await this.postService.deletePost(+postId);
   }

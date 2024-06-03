@@ -9,20 +9,21 @@ datasource db {
 }
 
 model User {
-  id        Int        @id @default(autoincrement())
-  email     String     @unique
-  userName  String     @unique
-  password  String
-  name      String
-  surname   String
-  image     String?
-  address   Address    @relation(fields: [addressId], references: [id])
-  birthDate String
-  addressId Int        @unique
-  posts     Post[]
-  bookmarks Bookmark[]
-  likes     Like[]
-  createdAt DateTime   @default(now())
+  id          Int        @id @default(autoincrement())
+  email       String     @unique
+  userName    String     @unique
+  password    String
+  name        String
+  surname     String
+  image       String?
+  description String?
+  address     Address    @relation(fields: [addressId], references: [id])
+  birthDate   String
+  addressId   Int        @unique
+  posts       Post[]
+  bookmarks   Bookmark[]
+  likes       Like[]
+  createdAt   DateTime   @default(now())
 }
 
 model Address {
