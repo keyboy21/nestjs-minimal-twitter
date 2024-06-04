@@ -58,10 +58,12 @@ export class PostController {
   @ApiResponse({ status: HttpStatus.OK, type: EditPostEntity })
   @UsePipes(new ZodValidationPipe(editPostSchema))
   @UseGuards(AuthGuard)
-  public async editPost(@Param('postId') postId: string) {
-    console.log('postId', postId);
-    // if (!postId) throw new NotFoundException('Post not found');
-    // return await this.postService.editPost(body, +postId);
+  public async editPost(
+    @Param('postId') postId: string,
+    @Body() body: EditPostDto
+  ) {
+    if (!postId) return new NotFoundException('Post params not found');
+    return await this.postService.editPost(body, +postId);
   }
 
   @Delete(':postId')
@@ -70,6 +72,7 @@ export class PostController {
   @UsePipes(new ZodValidationPipe(deletePostSchema))
   @UseGuards(AuthGuard)
   public async deletePost(@Param('postId') postId: string, body: DeletePostDto) {
+    if (!postId) return new NotFoundException('Post params not found');
     return await this.postService.deletePost(+postId, body.authorId);
   }
 }
