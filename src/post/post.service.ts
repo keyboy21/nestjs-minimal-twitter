@@ -10,7 +10,7 @@ import { AddLikePostDto } from './dto/addLike.dto';
 
 @Injectable()
 export class PostService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) { }
 
   public async getAllPosts() {
     return await this.prisma.post.findMany({
@@ -145,8 +145,7 @@ export class PostService {
       },
     });
 
-    if (userAlreadyLiked > 0)
-      throw new BadRequestException('You already liked this post');
+    if (userAlreadyLiked > 0) throw new BadRequestException('You already liked this post');
 
     return await this.prisma.like.create({
       data: {
@@ -154,6 +153,32 @@ export class PostService {
         userId,
       },
     });
+  }
+
+  public async removeLike({ postId, userId }: AddLikePostDto) {
+    const postExists = await this.prisma.post.count({
+      where: {
+        id: postId,
+      },
+    });
+
+    if (postExists > 0) throw new NotFoundException('Post not found');
+
+    const userAlreadyLiked = await this.prisma.like.findFirst({
+      where: {
+        postId,
+        userId,
+      },
+    });
+
+    if (!userAlreadyLiked) throw new BadRequestException('You have not liked this post');
+
+    return await this.prisma.like.delete({
+      where: {
+        id: userAlreadyLiked.id,
+      },
+    });
+
   }
 
   private async postExists(postId: number) {

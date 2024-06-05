@@ -25,7 +25,7 @@ import { AddLikePostDto, addLikeSchema } from './dto/addLike.dto';
 @ApiTags('posts')
 @Controller('posts')
 export class PostController {
-  constructor(private readonly postService: PostService) {}
+  constructor(private readonly postService: PostService) { }
 
   @Get()
   @ApiOperation({ summary: 'Get all posts' })
@@ -89,4 +89,14 @@ export class PostController {
   public async addLike(@Body() body: AddLikePostDto) {
     return await this.postService.addLike(body);
   }
+
+  @Post('/remove-like')
+  @ApiOperation({ summary: 'Remove like' })
+  @ApiResponse({ status: HttpStatus.OK })
+  @UsePipes(new ZodValidationPipe(addLikeSchema))
+  @UseGuards(AuthGuard)
+  public async removeLike(@Body() body: AddLikePostDto) {
+    return await this.postService.removeLike(body);
+  }
+
 }
