@@ -13,7 +13,8 @@ export class JwtStrategy extends PassportStrategy(
 ) {
   constructor(
     private configService: ConfigService,
-    private userService: UsersService) {
+    private userService: UsersService,
+  ) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       secretOrKey: configService.get<string>('JWT_SECRET'),
@@ -21,13 +22,12 @@ export class JwtStrategy extends PassportStrategy(
   }
 
   async validate({ userName, sub }: AuthTokenPayload) {
+    if (!userName || !sub) return new UnauthorizedException('User not found');
 
-    if (!userName || !sub) return new UnauthorizedException('User not found')
+    const user = await this.userService.validateUser({ userName, sub });
 
-    const user = await this.userService.validateUser({ userName, sub })
+    if (user === null) return new UnauthorizedException('User not found');
 
-    if (user === null) return new UnauthorizedException('User not found')
-
-    return user
+    return user;
   }
 }

@@ -6,7 +6,7 @@ import { AuthTokenPayload } from 'src/auth/types';
 
 @Injectable()
 export class UsersService {
-  constructor(private prisma: PrismaService) { }
+  constructor(private prisma: PrismaService) {}
 
   public async createUser(payload: registerUserDto) {
     // TODO: DO some stuff with image
@@ -34,16 +34,15 @@ export class UsersService {
   }
 
   public async validateUser(payload: AuthTokenPayload) {
-
     const user = await this.prisma.user.findUnique({
       where: {
         userName: payload.userName,
-      }
-    })
+      },
+    });
 
-    if (user === null) return null
+    if (user === null) return null;
 
-    return payload
+    return payload;
   }
 
   public async findUserByEmail(email: string) {

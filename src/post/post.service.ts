@@ -1,11 +1,16 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from 'src/prisma.service';
 import { CreatePostDto } from './dto/create.dto';
 import { EditPostDto } from './dto/edit.dto';
+import { AddLikePostDto } from './dto/addLike.dto';
 
 @Injectable()
 export class PostService {
-  constructor(private prisma: PrismaService) { }
+  constructor(private prisma: PrismaService) {}
 
   public async getAllPosts() {
     return await this.prisma.post.findMany({
@@ -34,7 +39,7 @@ export class PostService {
   public async getOnePost(postId: number) {
     const postExists = await this.postExists(postId);
 
-    if (!postExists) return new NotFoundException('Post not found');
+    if (!postExists) throw new NotFoundException('Post not found');
 
     const post = this.prisma.post.findUnique({
       where: {
@@ -51,7 +56,7 @@ export class PostService {
         author: {
           select: {
             userName: true,
-          }
+          },
         },
         post: true,
         id: true,
@@ -66,11 +71,12 @@ export class PostService {
   public async editPost(payload: EditPostDto, postId: number) {
     const postExists = await this.postExists(postId);
 
-    if (!postExists) return new NotFoundException('Post not found');
+    if (!postExists) throw new NotFoundException('Post not found');
 
     const isPostOwner = postExists.authorId === payload.authorId;
 
-    if (!isPostOwner) return new BadRequestException('You are not allowed to edit this post');
+    if (!isPostOwner)
+      throw new BadRequestException('You are not allowed to edit this post');
 
     await this.prisma.post.update({
       where: {
@@ -87,20 +93,66 @@ export class PostService {
   public async deletePost(postId: number, authorId: number) {
     const postExists = await this.postExists(postId);
 
-    if (!postExists) return new NotFoundException('Post not found');
+    if (!postExists) throw new NotFoundException('Post not found');
 
     const isPostOwner = postExists.authorId === authorId;
 
-    if (!isPostOwner) return new BadRequestException('You are not allowed to delete this post');
+    if (!isPostOwner)
+      throw new BadRequestException('You are not allowed to delete this post');
 
-    return await this.prisma.post.delete({
+    const deleteLike = this.prisma.like.deleteMany({
+      where: {
+        postId,
+      },
+    });
+
+    const deleteBookmark = this.prisma.bookmark.deleteMany({
+      where: {
+        postId,
+      },
+    });
+
+    const deletePost = this.prisma.post.delete({
       where: {
         id: postId,
       },
-      include: {
-        bookmarks: true,
-        likes: true,
-      }
+    });
+
+    const transaction = await this.prisma.$transaction([
+      deleteLike,
+      deleteBookmark,
+      deletePost,
+    ]);
+
+    if (!transaction) throw new BadRequestException('Something went wrong');
+
+    return { postId, authorId };
+  }
+
+  public async addLike({ postId, userId }: AddLikePostDto) {
+    const postExists = await this.prisma.post.count({
+      where: {
+        id: postId,
+      },
+    });
+
+    if (postExists > 0) throw new NotFoundException('Post not found');
+
+    const userAlreadyLiked = await this.prisma.like.count({
+      where: {
+        postId,
+        userId,
+      },
+    });
+
+    if (userAlreadyLiked > 0)
+      throw new BadRequestException('You already liked this post');
+
+    return await this.prisma.like.create({
+      data: {
+        postId,
+        userId,
+      },
     });
   }
 

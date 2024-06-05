@@ -19,7 +19,7 @@ import { refreshTokenDto, refreshTokenSchema } from './dto/refreshToken.dto';
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) { }
+  constructor(private authService: AuthService) {}
 
   @Post('/register')
   @ApiOperation({ summary: 'Create User' })

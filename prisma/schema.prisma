@@ -49,10 +49,10 @@ model Post {
 
 model Bookmark {
   id     Int  @id @default(autoincrement())
-  user   User @relation(fields: [userId], references: [id])
-  userId Int
-  post   Post @relation(fields: [postId], references: [id])
-  postId Int
+  user   User? @relation(fields: [userId], references: [id])
+  userId Int?
+  post   Post? @relation(fields: [postId], references: [id])
+  postId Int?
 
   @@index([userId])
   @@index([postId])
@@ -60,10 +60,10 @@ model Bookmark {
 
 model Like {
   id     Int  @id @default(autoincrement())
-  user   User @relation(fields: [userId], references: [id])
-  userId Int
-  post   Post @relation(fields: [postId], references: [id])
-  postId Int
+  user   User? @relation(fields: [userId], references: [id])
+  userId Int?
+  post   Post? @relation(fields: [postId], references: [id])
+  postId Int?
 
   @@index([userId])
   @@index([postId])

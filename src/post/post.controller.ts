@@ -20,11 +20,12 @@ import { EditPostDto, editPostSchema } from './dto/edit.dto';
 import { AuthGuard } from 'src/auth/guard/auth.guard';
 import { CreatePostEntity, EditPostEntity, PostEntity } from './entities';
 import { DeletePostDto, deletePostSchema } from './dto/delete.dto';
+import { AddLikePostDto, addLikeSchema } from './dto/addLike.dto';
 
 @ApiTags('posts')
 @Controller('posts')
 export class PostController {
-  constructor(private readonly postService: PostService) { }
+  constructor(private readonly postService: PostService) {}
 
   @Get()
   @ApiOperation({ summary: 'Get all posts' })
@@ -60,7 +61,7 @@ export class PostController {
   @UseGuards(AuthGuard)
   public async editPost(
     @Param('postId') postId: string,
-    @Body() body: EditPostDto
+    @Body() body: EditPostDto,
   ) {
     if (!postId) return new NotFoundException('Post params not found');
     return await this.postService.editPost(body, +postId);
@@ -71,8 +72,21 @@ export class PostController {
   @ApiResponse({ status: HttpStatus.OK })
   @UsePipes(new ZodValidationPipe(deletePostSchema))
   @UseGuards(AuthGuard)
-  public async deletePost(@Param('postId') postId: string, body: DeletePostDto) {
+  public async deletePost(
+    @Param('postId') postId: string,
+    @Body() body: DeletePostDto,
+  ) {
     if (!postId) return new NotFoundException('Post params not found');
+
     return await this.postService.deletePost(+postId, body.authorId);
+  }
+
+  @Post('/add-like')
+  @ApiOperation({ summary: 'Add like' })
+  @ApiResponse({ status: HttpStatus.OK })
+  @UsePipes(new ZodValidationPipe(addLikeSchema))
+  @UseGuards(AuthGuard)
+  public async addLike(@Body() body: AddLikePostDto) {
+    return await this.postService.addLike(body);
   }
 }
