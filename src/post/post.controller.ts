@@ -21,6 +21,7 @@ import { AuthGuard } from 'src/auth/guard/auth.guard';
 import { CreatePostEntity, EditPostEntity, PostEntity } from './entities';
 import { DeletePostDto, deletePostSchema } from './dto/delete.dto';
 import { AddLikePostDto, addLikeSchema } from './dto/addLike.dto';
+import { AddToBookmarkDto, addToBookmarkSchema } from './dto/addBookmark.dto';
 
 @ApiTags('posts')
 @Controller('posts')
@@ -97,6 +98,24 @@ export class PostController {
   @UseGuards(AuthGuard)
   public async removeLike(@Body() body: AddLikePostDto) {
     return await this.postService.removeLike(body);
+  }
+
+  @Post('/add-bookmark')
+  @ApiOperation({ summary: 'Add bookmark' })
+  @ApiResponse({ status: HttpStatus.OK })
+  @UsePipes(new ZodValidationPipe(addToBookmarkSchema))
+  @UseGuards(AuthGuard)
+  public async addToBookmark(@Body() body: AddToBookmarkDto) {
+    return await this.postService.addToBookmark(body);
+  }
+
+  @Post('/remove-bookmark')
+  @ApiOperation({ summary: 'Remove bookmark' })
+  @ApiResponse({ status: HttpStatus.OK })
+  @UsePipes(new ZodValidationPipe(addToBookmarkSchema))
+  @UseGuards(AuthGuard)
+  public async removeBookmark(@Body() body: AddToBookmarkDto) {
+    return await this.postService.removeBookmark(body);
   }
 
 }

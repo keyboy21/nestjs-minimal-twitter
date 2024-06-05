@@ -7,6 +7,7 @@ import { PrismaService } from 'src/prisma.service';
 import { CreatePostDto } from './dto/create.dto';
 import { EditPostDto } from './dto/edit.dto';
 import { AddLikePostDto } from './dto/addLike.dto';
+import { AddToBookmarkDto } from './dto/addBookmark.dto';
 
 @Injectable()
 export class PostService {
@@ -100,13 +101,13 @@ export class PostService {
     if (!isPostOwner)
       throw new BadRequestException('You are not allowed to delete this post');
 
-    const deleteLike = this.prisma.like.deleteMany({
+    const deleteLikes = this.prisma.like.deleteMany({
       where: {
         postId,
       },
     });
 
-    const deleteBookmark = this.prisma.bookmark.deleteMany({
+    const deleteBookmarks = this.prisma.bookmark.deleteMany({
       where: {
         postId,
       },
@@ -119,8 +120,8 @@ export class PostService {
     });
 
     const transaction = await this.prisma.$transaction([
-      deleteLike,
-      deleteBookmark,
+      deleteLikes,
+      deleteBookmarks,
       deletePost,
     ]);
 
@@ -178,7 +179,57 @@ export class PostService {
         id: userAlreadyLiked.id,
       },
     });
+  }
 
+  public async addToBookmark({ postId, userId }: AddToBookmarkDto) {
+    const postExists = await this.prisma.post.count({
+      where: {
+        id: postId,
+      },
+    });
+
+    if (postExists > 0) throw new NotFoundException('Post not found');
+
+    const userAlreadyBookmarked = await this.prisma.bookmark.count({
+      where: {
+        postId,
+        userId,
+      },
+    });
+
+    if (userAlreadyBookmarked > 0) throw new BadRequestException('You already bookmarked this post');
+
+    return await this.prisma.bookmark.create({
+      data: {
+        postId,
+        userId,
+      },
+    });
+  }
+
+  public async removeBookmark({ postId, userId }: AddToBookmarkDto) {
+    const postExists = await this.prisma.post.count({
+      where: {
+        id: postId,
+      },
+    });
+
+    if (postExists > 0) throw new NotFoundException('Post not found');
+
+    const userAlreadyBookmarked = await this.prisma.bookmark.findFirst({
+      where: {
+        postId,
+        userId,
+      },
+    });
+
+    if (!userAlreadyBookmarked) throw new BadRequestException('You have not bookmarked this post');
+
+    return await this.prisma.bookmark.delete({
+      where: {
+        id: userAlreadyBookmarked.id,
+      },
+    });
   }
 
   private async postExists(postId: number) {
