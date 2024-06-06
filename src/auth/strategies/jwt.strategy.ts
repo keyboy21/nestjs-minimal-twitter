@@ -1,10 +1,10 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { AuthTokenPayload } from '../types';
 import { ConfigService } from '@nestjs/config';
 import { AuthConfig } from 'src/configs/auth.config';
-import { UsersService } from 'src/users/users.service';
+// import { UsersService } from 'src/users/users.service';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(
@@ -13,7 +13,7 @@ export class JwtStrategy extends PassportStrategy(
 ) {
   constructor(
     private configService: ConfigService,
-    private userService: UsersService,
+    // private userService: UsersService,
   ) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
@@ -22,12 +22,12 @@ export class JwtStrategy extends PassportStrategy(
   }
 
   async validate({ userName, sub }: AuthTokenPayload) {
-    if (!userName || !sub) return new UnauthorizedException('User not found');
+    // if (!userName || !sub) return new UnauthorizedException('User not found');
 
-    const user = await this.userService.validateUser({ userName, sub });
+    // const user = await this.userService.validateUser({ userName, sub });
 
-    if (user === null) return new UnauthorizedException('User not found');
+    // if (user === null) return new UnauthorizedException('User not found');
 
-    return user;
+    return { sub, userName };
   }
 }

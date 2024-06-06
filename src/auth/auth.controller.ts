@@ -8,7 +8,7 @@ import {
 } from '@nestjs/common';
 import { registerUserDto, registersSchema } from './dto/register.dto';
 import { ZodValidationPipe } from 'src/shared/zodvalidationPipe';
-import { loginUserDto, loginSchema, myOpenApiSchema } from './dto/login.dto';
+import { loginUserDto, loginSchema, loginUser } from './dto/login.dto';
 import { ApiOperation, ApiResponse, ApiTags, ApiBody, ApiConsumes } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { AuthGuard } from './guard/auth.guard';
@@ -36,9 +36,7 @@ export class AuthController {
 
   @Post('/login')
   @ApiOperation({ summary: 'Login user' })
-  @ApiBody({
-    schema: myOpenApiSchema,
-  })
+  @ApiBody({ type: loginUser })
   @ApiResponse({ status: HttpStatus.OK, type: LoginResponse })
   @UsePipes(new ZodValidationPipe(loginSchema))
   public async login(@Body() body: loginUserDto) {
