@@ -17,7 +17,7 @@ export class AuthService {
     private jwtService: JwtService,
     private pisma: PrismaService,
     private usersService: UsersService,
-  ) {}
+  ) { }
 
   public async register(payload: registerUserDto) {
     const userAlreadyExist = await this.pisma.user.findUnique({
@@ -32,14 +32,9 @@ export class AuthService {
         'User with this email or userName already exist',
       );
 
-    const newUser = await this.usersService.createUser(payload);
+    await this.usersService.createUser(payload);
 
-    const token = await this.generateToken({
-      sub: newUser.id,
-      userName: newUser.userName,
-    });
-
-    return token;
+    return payload;
   }
 
   public async login(
