@@ -10,10 +10,10 @@ export const loginSchema = z
       .string()
       .min(8, { message: 'Password must be at least 8 characters long' }),
   })
-  .required()
+  .required();
 
 export type loginUserDto = z.infer<typeof loginSchema>;
-export class loginUser {
+export class loginUserBody {
   @ApiProperty({
     example: 'johnkrasewski',
     description: 'username',

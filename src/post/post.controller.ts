@@ -6,6 +6,7 @@ import {
   HttpStatus,
   NotFoundException,
   Param,
+  ParseIntPipe,
   Patch,
   Post,
   Put,
@@ -18,15 +19,19 @@ import { ZodValidationPipe } from 'src/shared/zodvalidationPipe';
 import { CreatePostDto, createPostSchema } from './dto/create.dto';
 import { EditPostDto, editPostSchema } from './dto/edit.dto';
 import { AuthGuard } from 'src/auth/guard/auth.guard';
-import { CreatePostEntity, EditPostEntity, PostEntity } from './entities';
+import { CreatePostEntity, EditPostEntity, PostEntity } from './responses';
 import { DeletePostDto, deletePostSchema } from './dto/delete.dto';
-import { AddLikePostDto, addLikeSchema } from './dto/addLike.dto';
+import {
+  AddLikePostBody,
+  AddLikePostDto,
+  addLikeSchema,
+} from './dto/addLike.dto';
 import { AddToBookmarkDto, addToBookmarkSchema } from './dto/addBookmark.dto';
 
 @ApiTags('posts')
 @Controller('posts')
 export class PostController {
-  constructor(private readonly postService: PostService) { }
+  constructor(private readonly postService: PostService) {}
 
   @Get()
   @ApiOperation({ summary: 'Get all posts' })
@@ -38,8 +43,8 @@ export class PostController {
   @Get(':postId')
   @ApiOperation({ summary: 'Get one post' })
   @ApiResponse({ status: HttpStatus.OK, type: PostEntity })
-  public async getOnePost(@Param('postId') postId: string) {
-    return await this.postService.getOnePost(+postId);
+  public async getOnePost(@Param('postId', ParseIntPipe) postId: number) {
+    return await this.postService.getOnePost(postId);
   }
 
   @Post()
@@ -61,11 +66,10 @@ export class PostController {
   @UsePipes(new ZodValidationPipe(editPostSchema))
   @UseGuards(AuthGuard)
   public async editPost(
-    @Param('postId') postId: string,
+    @Param('postId', ParseIntPipe) postId: number,
     @Body() body: EditPostDto,
   ) {
-    if (!postId) return new NotFoundException('Post params not found');
-    return await this.postService.editPost(body, +postId);
+    return await this.postService.editPost(body, postId);
   }
 
   @Delete(':postId')
@@ -74,17 +78,16 @@ export class PostController {
   @UsePipes(new ZodValidationPipe(deletePostSchema))
   @UseGuards(AuthGuard)
   public async deletePost(
-    @Param('postId') postId: string,
+    @Param('postId', ParseIntPipe) postId: number,
     @Body() body: DeletePostDto,
   ) {
-    if (!postId) return new NotFoundException('Post params not found');
-
-    return await this.postService.deletePost(+postId, body.authorId);
+    return await this.postService.deletePost(postId, body.authorId);
   }
 
   @Post('/add-like')
+  @ApiBody({ type: AddLikePostBody })
   @ApiOperation({ summary: 'Add like' })
-  @ApiResponse({ status: HttpStatus.OK })
+  @ApiResponse({ status: HttpStatus.OK, type: AddLikePostBody })
   @UsePipes(new ZodValidationPipe(addLikeSchema))
   @UseGuards(AuthGuard)
   public async addLike(@Body() body: AddLikePostDto) {
@@ -101,7 +104,7 @@ export class PostController {
   }
 
   @Post('/add-bookmark')
-  @ApiOperation({ summary: 'Add bookmark' })
+  @ApiOperation({ summary: 'Add to bookmarks' })
   @ApiResponse({ status: HttpStatus.OK })
   @UsePipes(new ZodValidationPipe(addToBookmarkSchema))
   @UseGuards(AuthGuard)
@@ -110,12 +113,11 @@ export class PostController {
   }
 
   @Post('/remove-bookmark')
-  @ApiOperation({ summary: 'Remove bookmark' })
+  @ApiOperation({ summary: 'Remove from bookmarks' })
   @ApiResponse({ status: HttpStatus.OK })
   @UsePipes(new ZodValidationPipe(addToBookmarkSchema))
   @UseGuards(AuthGuard)
   public async removeBookmark(@Body() body: AddToBookmarkDto) {
     return await this.postService.removeBookmark(body);
   }
-
 }

@@ -33,6 +33,23 @@ export class UsersService {
     return user;
   }
 
+  public async getUserInfo(id: number) {
+    return await this.prisma.user.findUnique({
+      where: {
+        id: id,
+      },
+      select: {
+        name: true,
+        surname: true,
+        userName: true,
+        birthDate: true,
+        address: true,
+        image: true,
+        description: true,
+      },
+    });
+  }
+
   public async validateUser(payload: AuthTokenPayload) {
     const user = await this.prisma.user.findUnique({
       where: {

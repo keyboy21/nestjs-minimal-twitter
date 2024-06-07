@@ -11,7 +11,7 @@ import { AddToBookmarkDto } from './dto/addBookmark.dto';
 
 @Injectable()
 export class PostService {
-  constructor(private prisma: PrismaService) { }
+  constructor(private prisma: PrismaService) {}
 
   public async getAllPosts() {
     return await this.prisma.post.findMany({
@@ -146,14 +146,17 @@ export class PostService {
       },
     });
 
-    if (userAlreadyLiked > 0) throw new BadRequestException('You already liked this post');
+    if (userAlreadyLiked > 0)
+      throw new BadRequestException('You already liked this post');
 
-    return await this.prisma.like.create({
+    await this.prisma.like.create({
       data: {
         postId,
         userId,
       },
     });
+
+    return { postId, userId };
   }
 
   public async removeLike({ postId, userId }: AddLikePostDto) {
@@ -172,7 +175,8 @@ export class PostService {
       },
     });
 
-    if (!userAlreadyLiked) throw new BadRequestException('You have not liked this post');
+    if (!userAlreadyLiked)
+      throw new BadRequestException('You have not liked this post');
 
     return await this.prisma.like.delete({
       where: {
@@ -197,7 +201,8 @@ export class PostService {
       },
     });
 
-    if (userAlreadyBookmarked > 0) throw new BadRequestException('You already bookmarked this post');
+    if (userAlreadyBookmarked > 0)
+      throw new BadRequestException('You already bookmarked this post');
 
     return await this.prisma.bookmark.create({
       data: {
@@ -223,7 +228,8 @@ export class PostService {
       },
     });
 
-    if (!userAlreadyBookmarked) throw new BadRequestException('You have not bookmarked this post');
+    if (!userAlreadyBookmarked)
+      throw new BadRequestException('You have not bookmarked this post');
 
     return await this.prisma.bookmark.delete({
       where: {
