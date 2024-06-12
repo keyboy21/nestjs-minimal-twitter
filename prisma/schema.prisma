@@ -9,21 +9,21 @@ datasource db {
 }
 
 model User {
-  id          Int        @id @default(autoincrement())
-  email       String     @unique
-  userName    String     @unique
-  password    String
-  name        String
-  surname     String
-  image       String?
-  description String?
-  address     Address    @relation(fields: [addressId], references: [id])
-  birthDate   String
-  addressId   Int        @unique
-  posts       Post[]
-  bookmarks   Bookmark[]
-  likes       Like[]
-  createdAt   DateTime   @default(now())
+  id        Int        @id @default(autoincrement())
+  email     String     @unique
+  userName  String     @unique
+  password  String
+  name      String
+  surname   String
+  image     String?
+  bio       String?
+  address   Address    @relation(fields: [addressId], references: [id])
+  birthDate String
+  addressId Int        @unique
+  posts     Post[]
+  bookmarks Bookmark[]
+  likes     Like[]
+  createdAt DateTime   @default(now())
 }
 
 model Address {
@@ -48,7 +48,7 @@ model Post {
 }
 
 model Bookmark {
-  id     Int  @id @default(autoincrement())
+  id     Int   @id @default(autoincrement())
   user   User? @relation(fields: [userId], references: [id])
   userId Int?
   post   Post? @relation(fields: [postId], references: [id])
@@ -59,7 +59,7 @@ model Bookmark {
 }
 
 model Like {
-  id     Int  @id @default(autoincrement())
+  id     Int   @id @default(autoincrement())
   user   User? @relation(fields: [userId], references: [id])
   userId Int?
   post   Post? @relation(fields: [postId], references: [id])

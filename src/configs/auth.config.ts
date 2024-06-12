@@ -1,4 +1,4 @@
 export const AuthConfig = {
-  AuthTokenKey: 'access_token',
-  AuthRefReshKey: 'refresh_token',
+  authTokenKey: 'access_token',
+  authRefReshKey: 'refresh_token',
 };

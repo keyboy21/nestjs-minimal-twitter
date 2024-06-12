@@ -6,7 +6,6 @@ import {
   UseGuards,
   UsePipes,
 } from '@nestjs/common';
-import { registerUserDto, registersSchema } from './dto/register.dto';
 import { ZodValidationPipe } from 'src/shared/zodvalidationPipe';
 import { loginUserDto, loginSchema, loginUserBody } from './dto/login.dto';
 import {
@@ -14,7 +13,6 @@ import {
   ApiResponse,
   ApiTags,
   ApiBody,
-  ApiConsumes,
 } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { AuthGuard } from './guard/auth.guard';
@@ -23,13 +21,14 @@ import {
   refreshTokenDto,
   refreshTokenSchema,
 } from './dto/refreshToken.dto';
-import { RegisterResponse } from './responses/register';
+import { RegisterResponse } from '../users/responses/register';
 import { LoginResponse } from './responses/login';
+import { registerUserDto, registersSchema } from './dto/register.dto';
 
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService) { }
 
   @Post('/register')
   @ApiOperation({ summary: 'Create User' })

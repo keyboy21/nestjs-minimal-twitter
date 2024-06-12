@@ -1,15 +1,15 @@
 import { Injectable } from '@nestjs/common';
-import { registerUserDto } from 'src/auth/dto/register.dto';
 import { PrismaService } from 'src/prisma.service';
 import { hash } from '@node-rs/argon2';
 import { AuthTokenPayload } from 'src/auth/types';
+import { editUserDto } from './dto/editUser.dto';
+import { registerUserDto } from 'src/auth/dto/register.dto';
 
 @Injectable()
 export class UsersService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) { }
 
   public async createUser(payload: registerUserDto) {
-    // TODO: DO some stuff with image
 
     const hashPassword = await this.hashPassword(payload.password);
 
@@ -33,6 +33,35 @@ export class UsersService {
     return user;
   }
 
+  public async editUser(id: number, payload: editUserDto) {
+    // TODO: DO some stuff with image
+
+    const hashPassword = await this.hashPassword(payload.password);
+
+    await this.prisma.user.update({
+      where: {
+        id: id,
+      },
+      data: {
+        name: payload.name,
+        email: payload.email,
+        surname: payload.surname,
+        userName: payload.userName,
+        birthDate: payload.birthDate,
+        password: hashPassword,
+        address: {
+          update: {
+            zip: payload.address.zip,
+            city: payload.address.city,
+            country: payload.address.country,
+          },
+        },
+      },
+    });
+
+    return payload
+  }
+
   public async getUserInfo(id: number) {
     return await this.prisma.user.findUnique({
       where: {
@@ -45,7 +74,7 @@ export class UsersService {
         birthDate: true,
         address: true,
         image: true,
-        description: true,
+        bio: true,
       },
     });
   }

@@ -9,7 +9,7 @@ import { AuthConfig } from 'src/configs/auth.config';
 @Injectable()
 export class JwtStrategy extends PassportStrategy(
   Strategy,
-  AuthConfig.AuthTokenKey,
+  AuthConfig.authTokenKey,
 ) {
   constructor(
     private configService: ConfigService,

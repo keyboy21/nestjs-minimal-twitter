@@ -4,12 +4,10 @@ import {
   Delete,
   Get,
   HttpStatus,
-  NotFoundException,
   Param,
   ParseIntPipe,
   Patch,
   Post,
-  Put,
   UseGuards,
   UsePipes,
 } from '@nestjs/common';
@@ -103,7 +101,7 @@ export class PostController {
     return await this.postService.removeLike(body);
   }
 
-  @Post('/add-bookmark')
+  @Post('/add-to-bookmarks')
   @ApiOperation({ summary: 'Add to bookmarks' })
   @ApiResponse({ status: HttpStatus.OK })
   @UsePipes(new ZodValidationPipe(addToBookmarkSchema))
@@ -112,7 +110,7 @@ export class PostController {
     return await this.postService.addToBookmark(body);
   }
 
-  @Post('/remove-bookmark')
+  @Post('/remove-from-bookmarks')
   @ApiOperation({ summary: 'Remove from bookmarks' })
   @ApiResponse({ status: HttpStatus.OK })
   @UsePipes(new ZodValidationPipe(addToBookmarkSchema))
