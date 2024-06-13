@@ -21,7 +21,7 @@ import {
   refreshTokenDto,
   refreshTokenSchema,
 } from './dto/refreshToken.dto';
-import { RegisterResponse } from '../users/responses/register';
+import { RegisterResponse } from './responses/register';
 import { LoginResponse } from './responses/login';
 import { registerUserDto, registersSchema } from './dto/register.dto';
 

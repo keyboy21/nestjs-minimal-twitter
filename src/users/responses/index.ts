@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Address } from 'src/users/responses/register';
+import { Address } from 'src/auth/responses/register';
 
 export class UserResponse {
   @ApiProperty({
