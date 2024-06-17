@@ -4,10 +4,13 @@ import { hash } from '@node-rs/argon2';
 import { AuthTokenPayload } from 'src/auth/types';
 import { editUserDto } from './dto/editUser.dto';
 import { registerUserDto } from 'src/auth/dto/register.dto';
+import { UploadService, UploadType } from 'src/upload/upload.service';
 
 @Injectable()
 export class UsersService {
-  constructor(private prisma: PrismaService) { }
+  constructor(
+    private prisma: PrismaService,
+    private readonly fileService: UploadService) { }
 
   public async createUser(payload: registerUserDto) {
 
@@ -34,7 +37,12 @@ export class UsersService {
   }
 
   public async editUser(id: number, payload: editUserDto) {
-    // TODO: DO some stuff with image
+
+    // TODO: test this 
+    if (payload.image) {
+      const picturePath = this.fileService.createFile(UploadType.IMAGE, payload.image);
+      payload.image = picturePath;
+    }
 
     const hashPassword = await this.hashPassword(payload.password);
 
@@ -49,6 +57,7 @@ export class UsersService {
         userName: payload.userName,
         birthDate: payload.birthDate,
         password: hashPassword,
+        image: payload.image,
         address: {
           update: {
             zip: payload.address.zip,
