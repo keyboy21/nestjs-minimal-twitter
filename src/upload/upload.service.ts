@@ -1,7 +1,7 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import * as path from 'node:path';
 import * as fs from 'fs';
-import { nanoid } from 'nanoid'
+import crypto from 'node:crypto';
 
 export enum UploadType {
      IMAGE = 'image',
@@ -13,7 +13,7 @@ export class UploadService {
      createFile(type: UploadType, file): string {
           try {
                const fileExtension = file.originalname.split('.').pop();
-               const fileName = nanoid() + '.' + fileExtension;
+               const fileName = crypto.randomUUID() + '.' + fileExtension;
                const filePath = path.resolve(__dirname, '..', 'static', type);
                if (!fs.existsSync(filePath)) {
                     fs.mkdirSync(filePath, { recursive: true });
