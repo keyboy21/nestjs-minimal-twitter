@@ -40,17 +40,23 @@ export class UsersController {
     ]),
   )
   @ApiResponse({ status: HttpStatus.OK, type: UserResponse })
-  @UsePipes(new ZodValidationPipe(editUserSchema))
+  // Todo: zod validation
+  // @UsePipes(new ZodValidationPipe(editUserSchema))
   @UseGuards(AuthGuard)
   public async editUser(
-    @UploadedFiles(
-      new ParseFilePipeBuilder().addFileTypeValidator({
-        fileType: 'image/jpeg',
-      }).build()
-    ) file: Express.Multer.File,
+    @UploadedFiles() file: { picture?: Express.Multer.File[] },
     @Param('userId', ParseIntPipe) userId: number,
     @Body() body: editUserDto,
   ) {
-    return this.userService.editUser(userId, { ...body, image: file.buffer.toString() });
+
+    if (file.picture) {
+
+      console.log('file', file.picture[0])
+    }
+    console.log('body', body)
+    // return this.userService.editUser(userId, { ...body, image: file.buffer.toString() });
   }
+
+
+
 }

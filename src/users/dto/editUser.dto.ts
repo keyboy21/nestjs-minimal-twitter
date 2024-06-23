@@ -31,7 +31,6 @@ export const editUserSchema = z
     surname: z
       .string()
       .min(1, { message: 'surname must be at least 1 characters long' }),
-    image: z.string().optional().nullable(),
     address: z.object({
       city: z.string().min(1),
       country: z.string().min(1),
