@@ -10,10 +10,10 @@ import { UploadService, UploadType } from 'src/upload/upload.service';
 export class UsersService {
   constructor(
     private prisma: PrismaService,
-    private readonly fileService: UploadService) { }
+    private readonly fileService: UploadService,
+  ) {}
 
   public async createUser(payload: registerUserDto) {
-
     const hashPassword = await this.hashPassword(payload.password);
 
     const user = await this.prisma.user.create({
@@ -36,28 +36,15 @@ export class UsersService {
     return user;
   }
 
-  public async editUser(id: number, payload: editUserDto) {
-
-    // TODO: test this 
-    if (payload.image) {
-      const picturePath = this.fileService.createFile(UploadType.IMAGE, payload.image);
-      payload.image = picturePath;
-    }
-
-    const hashPassword = await this.hashPassword(payload.password);
-
+  public async editUser({ id, payload }: { id: number; payload: editUserDto }) {
     await this.prisma.user.update({
       where: {
         id: id,
       },
       data: {
         name: payload.name,
-        email: payload.email,
         surname: payload.surname,
-        userName: payload.userName,
         birthDate: payload.birthDate,
-        password: hashPassword,
-        image: payload.image,
         address: {
           update: {
             zip: payload.address.zip,
@@ -68,10 +55,10 @@ export class UsersService {
       },
     });
 
-    return payload
+    return payload;
   }
 
-  public async getUserInfo(id: number) {
+  public async getUser(id: number) {
     return await this.prisma.user.findUnique({
       where: {
         id: id,
@@ -82,8 +69,39 @@ export class UsersService {
         userName: true,
         birthDate: true,
         address: true,
-        image: true,
+        avatar: true,
+        background: true,
         bio: true,
+      },
+    });
+  }
+
+  public async uploadAvatar(userId: number, avatar: Express.Multer.File) {
+    const avatarPath = this.fileService.createFile(UploadType.IMAGE, avatar[0]);
+    await this.prisma.user.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        avatar: avatarPath,
+      },
+    });
+  }
+
+  public async uploadBackgroundImage(
+    userId: number,
+    background: Express.Multer.File,
+  ) {
+    const backgroundImagePath = this.fileService.createFile(
+      UploadType.IMAGE,
+      background[0],
+    );
+    await this.prisma.user.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        background: backgroundImagePath,
       },
     });
   }

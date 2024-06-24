@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { UploadService } from './upload.service';
 
 @Module({
-     providers: [UploadService],
-     exports: [UploadService]
+  providers: [UploadService],
+  exports: [UploadService],
 })
-export class FileModule { }
+export class FileModule {}

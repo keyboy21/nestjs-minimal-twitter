@@ -22,9 +22,6 @@ const usernameSchema = z
 
 export const editUserSchema = z
   .object({
-    email: z.string().email({ message: 'Invalid email address' }),
-    password: passwordSchema,
-    userName: usernameSchema,
     name: z
       .string()
       .min(1, { message: 'name must be at least 1 characters long' }),
@@ -37,8 +34,15 @@ export const editUserSchema = z
       zip: z.string().min(1).optional(),
     }),
     birthDate: z.string().date(),
-    bio: z.string().optional().nullable(),
+    bio: z.string().optional(),
   })
   .required();
 
+export const editUserSettingsSchema = z.object({
+  email: z.string().email({ message: 'Invalid email address' }),
+  password: passwordSchema,
+  userName: usernameSchema,
+});
+
 export type editUserDto = z.infer<typeof editUserSchema>;
+export type editUserSettingsDto = z.infer<typeof editUserSettingsSchema>;

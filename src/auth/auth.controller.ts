@@ -8,12 +8,7 @@ import {
 } from '@nestjs/common';
 import { ZodValidationPipe } from 'src/shared/zodvalidationPipe';
 import { loginUserDto, loginSchema, loginUserBody } from './dto/login.dto';
-import {
-  ApiOperation,
-  ApiResponse,
-  ApiTags,
-  ApiBody,
-} from '@nestjs/swagger';
+import { ApiOperation, ApiResponse, ApiTags, ApiBody } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { AuthGuard } from './guard/auth.guard';
 import {
@@ -28,7 +23,7 @@ import { registerUserDto, registersSchema } from './dto/register.dto';
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) { }
+  constructor(private authService: AuthService) {}
 
   @Post('/register')
   @ApiOperation({ summary: 'Create User' })
