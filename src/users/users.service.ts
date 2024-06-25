@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma.service';
 import { hash } from '@node-rs/argon2';
 import { AuthTokenPayload } from 'src/auth/types';
-import { editUserDto } from './dto/editUser.dto';
+import { editUserDto, editUserPrivateSettingsDto } from './dto/editUser.dto';
 import { registerUserDto } from 'src/auth/dto/register.dto';
 import { UploadService, UploadType } from 'src/upload/upload.service';
 
@@ -11,7 +11,7 @@ export class UsersService {
   constructor(
     private prisma: PrismaService,
     private readonly fileService: UploadService,
-  ) {}
+  ) { }
 
   public async createUser(payload: registerUserDto) {
     const hashPassword = await this.hashPassword(payload.password);
@@ -56,6 +56,36 @@ export class UsersService {
     });
 
     return payload;
+  }
+
+  public async editUserPrivateSettings({ id, payload }: { id: number, payload: editUserPrivateSettingsDto }) {
+    const userExists = await this.prisma.user.findUnique({ where: { id: id } });
+    if (!userExists) {
+      throw new Error('User not found');
+    }
+
+    const userNameAlreadyExists = await this.prisma.user.findUnique({ where: { userName: payload.userName } });
+    if (userNameAlreadyExists) {
+      throw new Error('Username already exists');
+    }
+
+    const emailAlreadyExists = await this.prisma.user.findUnique({ where: { email: payload.email } });
+    if (emailAlreadyExists) {
+      throw new Error('Email already exists');
+    }
+
+    const hashPassword = await this.hashPassword(payload.password);
+
+    await this.prisma.user.update({
+      where: {
+        id: id,
+      },
+      data: {
+        userName: payload.userName,
+        email: payload.email,
+        password: hashPassword,
+      },
+    });
   }
 
   public async getUser(id: number) {

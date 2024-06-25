@@ -24,7 +24,7 @@ import { UsersService } from './users.service';
 import { UserResponse } from './responses';
 import { AuthGuard } from 'src/auth/guard/auth.guard';
 import { ZodValidationPipe } from 'src/shared/zodvalidationPipe';
-import { editUserDto, editUserSchema } from './dto/editUser.dto';
+import { editUserDto, editUserPrivateSettingsDto, editUserPrivateSettingsSchema, editUserSchema } from './dto/editUser.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ImageSizeConstants } from 'src/shared/constants';
 import { AvatarUploadDto, BackgroundUploadDto } from './dto/upload.dtos';
@@ -32,7 +32,7 @@ import { AvatarUploadDto, BackgroundUploadDto } from './dto/upload.dtos';
 @Controller('users')
 @ApiTags('users')
 export class UsersController {
-  constructor(private userService: UsersService) {}
+  constructor(private userService: UsersService) { }
 
   @Get(':userId')
   @ApiOperation({ summary: 'Get one user' })
@@ -51,6 +51,18 @@ export class UsersController {
     @Body() body: editUserDto,
   ) {
     return this.userService.editUser({ id: userId, payload: body });
+  }
+
+  @Patch('/private/:userId')
+  @ApiOperation({ summary: 'Edit private user settings' })
+  @ApiResponse({ status: HttpStatus.OK })
+  @UsePipes(new ZodValidationPipe(editUserPrivateSettingsSchema))
+  @UseGuards(AuthGuard)
+  public async editPrivateUserSettings(
+    @Param('userId', ParseIntPipe) userId: number,
+    @Body() body: editUserPrivateSettingsDto,
+  ) {
+    return this.userService.editUserPrivateSettings({ id: userId, payload: body });
   }
 
   @Post('avatar/:userId')

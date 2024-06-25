@@ -38,11 +38,11 @@ export const editUserSchema = z
   })
   .required();
 
-export const editUserSettingsSchema = z.object({
+export const editUserPrivateSettingsSchema = z.object({
   email: z.string().email({ message: 'Invalid email address' }),
   password: passwordSchema,
   userName: usernameSchema,
 });
 
 export type editUserDto = z.infer<typeof editUserSchema>;
-export type editUserSettingsDto = z.infer<typeof editUserSettingsSchema>;
+export type editUserPrivateSettingsDto = z.infer<typeof editUserPrivateSettingsSchema>;
