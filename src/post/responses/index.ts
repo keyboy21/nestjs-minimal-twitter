@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export class CreatePostEntity {
+export class CreatePostResponse {
   @ApiProperty({ description: 'The content of the post' })
   post: string;
 
@@ -8,7 +8,7 @@ export class CreatePostEntity {
   authorId: number;
 }
 
-export class EditPostEntity {
+export class EditPostResponse {
   @ApiProperty({ description: 'The content of the post' })
   post: string;
 
@@ -16,7 +16,7 @@ export class EditPostEntity {
   authorId: number;
 }
 
-export class PostEntity {
+export class PostResponse {
   @ApiProperty({ description: 'Post id' })
   id: number;
 

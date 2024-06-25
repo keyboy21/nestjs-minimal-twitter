@@ -1,3 +1,5 @@
+import { ApiProperty } from '@nestjs/swagger';
+import { Address } from 'src/auth/responses/register';
 import { z } from 'zod';
 
 const passwordSchema = z
@@ -46,3 +48,38 @@ export const editUserPrivateSettingsSchema = z.object({
 
 export type editUserDto = z.infer<typeof editUserSchema>;
 export type editUserPrivateSettingsDto = z.infer<typeof editUserPrivateSettingsSchema>;
+
+export class editUserBody {
+  @ApiProperty({ example: 'John', description: 'The first name of the user' })
+  name: string;
+
+  @ApiProperty({ example: 'Doe', description: 'The surname of the user' })
+  surname: string;
+
+  @ApiProperty({ description: 'User address' })
+  address: Address;
+
+  @ApiProperty({
+    example: '2000-01-01T00:00:00Z',
+    description: 'The birth date of the user',
+  })
+  birthDate: Date;
+
+  @ApiProperty({
+    example: 'Doe',
+    description: 'The last name of the user',
+  })
+  bio: string;
+}
+
+export class editUserPrivateSettingsBody {
+  @ApiProperty({ example: 'example@gmail.com', description: 'The email of the user' })
+  email: string;
+
+  @ApiProperty({ example: 'password', description: 'The password of the user' })
+  password: string;
+
+  @ApiProperty({ example: 'username', description: 'The username of the user' })
+  userName: string;
+}
+

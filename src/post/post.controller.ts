@@ -24,7 +24,7 @@ import { CreatePostDto, createPostSchema } from './dto/create.dto';
 import { DeletePostDto, deletePostSchema } from './dto/delete.dto';
 import { EditPostDto, editPostSchema } from './dto/edit.dto';
 import { PostService } from './post.service';
-import { CreatePostEntity, EditPostEntity, PostEntity } from './responses';
+import { CreatePostResponse, EditPostResponse, PostResponse } from './responses';
 
 @ApiTags('posts')
 @Controller('posts')
@@ -33,14 +33,14 @@ export class PostController {
 
   @Get()
   @ApiOperation({ summary: 'Get all posts' })
-  @ApiResponse({ status: HttpStatus.OK, type: [PostEntity] })
+  @ApiResponse({ status: HttpStatus.OK, type: [PostResponse] })
   public async getAllPosts() {
     return await this.postService.getAllPosts();
   }
 
   @Get(':postId')
   @ApiOperation({ summary: 'Get one post' })
-  @ApiResponse({ status: HttpStatus.OK, type: PostEntity })
+  @ApiResponse({ status: HttpStatus.OK, type: PostResponse })
   public async getOnePost(@Param('postId', ParseIntPipe) postId: number) {
     return await this.postService.getOnePost(postId);
   }
@@ -48,9 +48,9 @@ export class PostController {
   @Post()
   @ApiOperation({ summary: 'Create post' })
   @ApiBody({
-    type: CreatePostEntity,
+    type: CreatePostResponse,
   })
-  @ApiResponse({ status: HttpStatus.CREATED, type: CreatePostEntity })
+  @ApiResponse({ status: HttpStatus.CREATED, type: CreatePostResponse })
   @UsePipes(new ZodValidationPipe(createPostSchema))
   @UseGuards(AuthGuard)
   public async createPost(@Body() body: CreatePostDto) {
@@ -59,8 +59,8 @@ export class PostController {
 
   @Patch(':postId')
   @ApiOperation({ summary: 'Edit post' })
-  @ApiBody({ type: EditPostEntity })
-  @ApiResponse({ status: HttpStatus.OK, type: EditPostEntity })
+  @ApiBody({ type: EditPostResponse })
+  @ApiResponse({ status: HttpStatus.OK, type: EditPostResponse })
   @UsePipes(new ZodValidationPipe(editPostSchema))
   @UseGuards(AuthGuard)
   public async editPost(
@@ -94,6 +94,7 @@ export class PostController {
 
   @Post('/remove-like')
   @ApiOperation({ summary: 'Remove like' })
+  @ApiBody({ type: AddLikePostBody })
   @ApiResponse({ status: HttpStatus.OK })
   @UsePipes(new ZodValidationPipe(addLikeSchema))
   @UseGuards(AuthGuard)
@@ -103,6 +104,7 @@ export class PostController {
 
   @Post('/add-to-bookmarks')
   @ApiOperation({ summary: 'Add to bookmarks' })
+  @ApiBody({ type: AddLikePostBody })
   @ApiResponse({ status: HttpStatus.OK })
   @UsePipes(new ZodValidationPipe(addToBookmarkSchema))
   @UseGuards(AuthGuard)
@@ -112,6 +114,7 @@ export class PostController {
 
   @Post('/remove-from-bookmarks')
   @ApiOperation({ summary: 'Remove from bookmarks' })
+  @ApiBody({ type: AddLikePostBody })
   @ApiResponse({ status: HttpStatus.OK })
   @UsePipes(new ZodValidationPipe(addToBookmarkSchema))
   @UseGuards(AuthGuard)

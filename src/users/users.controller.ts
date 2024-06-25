@@ -24,7 +24,7 @@ import { UsersService } from './users.service';
 import { UserResponse } from './responses';
 import { AuthGuard } from 'src/auth/guard/auth.guard';
 import { ZodValidationPipe } from 'src/shared/zodvalidationPipe';
-import { editUserDto, editUserPrivateSettingsDto, editUserPrivateSettingsSchema, editUserSchema } from './dto/editUser.dto';
+import { editUserBody, editUserDto, editUserPrivateSettingsBody, editUserPrivateSettingsDto, editUserPrivateSettingsSchema, editUserSchema } from './dto/editUser.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ImageSizeConstants } from 'src/shared/constants';
 import { AvatarUploadDto, BackgroundUploadDto } from './dto/upload.dtos';
@@ -43,7 +43,8 @@ export class UsersController {
 
   @Patch(':userId')
   @ApiOperation({ summary: 'Edit user' })
-  @ApiResponse({ status: HttpStatus.OK, type: UserResponse })
+  @ApiBody({ type: editUserBody })
+  @ApiResponse({ status: HttpStatus.OK })
   @UsePipes(new ZodValidationPipe(editUserSchema))
   @UseGuards(AuthGuard)
   public async editUser(
@@ -55,6 +56,7 @@ export class UsersController {
 
   @Patch('/private/:userId')
   @ApiOperation({ summary: 'Edit private user settings' })
+  @ApiBody({ type: editUserPrivateSettingsBody })
   @ApiResponse({ status: HttpStatus.OK })
   @UsePipes(new ZodValidationPipe(editUserPrivateSettingsSchema))
   @UseGuards(AuthGuard)
