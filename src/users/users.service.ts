@@ -1,5 +1,5 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
-import { PrismaService } from 'src/prisma.service';
+import { PrismaService } from 'src/shared/services/prisma.service';
 import { hash } from '@node-rs/argon2';
 import { AuthTokenPayload } from 'src/auth/types';
 import { editUserDto, editUserPrivateSettingsDto } from './dto/editUser.dto';

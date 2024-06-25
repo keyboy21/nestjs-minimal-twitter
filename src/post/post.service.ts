@@ -4,7 +4,7 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
-import { PrismaService } from 'src/prisma.service';
+import { PrismaService } from 'src/shared/services/prisma.service';
 import { CreatePostDto } from './dto/create.dto';
 import { EditPostDto } from './dto/edit.dto';
 import { AddLikePostDto } from './dto/addLike.dto';

@@ -4,7 +4,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { PrismaService } from 'src/prisma.service';
+import { PrismaService } from 'src/shared/services/prisma.service';
 import { UsersService } from 'src/users/users.service';
 import { registerUserDto } from './dto/register.dto';
 import { AuthTokenPayload } from './types';
