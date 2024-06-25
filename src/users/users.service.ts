@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma.service';
 import { hash } from '@node-rs/argon2';
 import { AuthTokenPayload } from 'src/auth/types';
@@ -61,17 +61,17 @@ export class UsersService {
   public async editUserPrivateSettings({ id, payload }: { id: number, payload: editUserPrivateSettingsDto }) {
     const userExists = await this.prisma.user.findUnique({ where: { id: id } });
     if (!userExists) {
-      throw new Error('User not found');
+      throw new BadRequestException('User not found');
     }
 
     const userNameAlreadyExists = await this.prisma.user.findUnique({ where: { userName: payload.userName } });
     if (userNameAlreadyExists) {
-      throw new Error('Username already exists');
+      throw new BadRequestException('Username already exists');
     }
 
     const emailAlreadyExists = await this.prisma.user.findUnique({ where: { email: payload.email } });
     if (emailAlreadyExists) {
-      throw new Error('Email already exists');
+      throw new BadRequestException('Email already exists');
     }
 
     const hashPassword = await this.hashPassword(payload.password);
@@ -160,6 +160,14 @@ export class UsersService {
     return await this.prisma.user.findUnique({
       where: {
         userName: userName,
+      },
+    });
+  }
+
+  public async findUserById(id: number) {
+    return await this.prisma.user.findUnique({
+      where: {
+        id: id,
       },
     });
   }

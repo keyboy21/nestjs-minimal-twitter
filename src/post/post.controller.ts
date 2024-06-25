@@ -9,27 +9,27 @@ import {
   Patch,
   Post,
   UseGuards,
-  UsePipes,
+  UsePipes
 } from '@nestjs/common';
-import { PostService } from './post.service';
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { ZodValidationPipe } from 'src/shared/zodvalidationPipe';
-import { CreatePostDto, createPostSchema } from './dto/create.dto';
-import { EditPostDto, editPostSchema } from './dto/edit.dto';
 import { AuthGuard } from 'src/auth/guard/auth.guard';
-import { CreatePostEntity, EditPostEntity, PostEntity } from './responses';
-import { DeletePostDto, deletePostSchema } from './dto/delete.dto';
+import { ZodValidationPipe } from 'src/shared/zodvalidationPipe';
+import { AddToBookmarkDto, addToBookmarkSchema } from './dto/addBookmark.dto';
 import {
   AddLikePostBody,
   AddLikePostDto,
   addLikeSchema,
 } from './dto/addLike.dto';
-import { AddToBookmarkDto, addToBookmarkSchema } from './dto/addBookmark.dto';
+import { CreatePostDto, createPostSchema } from './dto/create.dto';
+import { DeletePostDto, deletePostSchema } from './dto/delete.dto';
+import { EditPostDto, editPostSchema } from './dto/edit.dto';
+import { PostService } from './post.service';
+import { CreatePostEntity, EditPostEntity, PostEntity } from './responses';
 
 @ApiTags('posts')
 @Controller('posts')
 export class PostController {
-  constructor(private readonly postService: PostService) {}
+  constructor(private readonly postService: PostService) { }
 
   @Get()
   @ApiOperation({ summary: 'Get all posts' })

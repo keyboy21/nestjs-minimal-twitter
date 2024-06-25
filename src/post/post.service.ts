@@ -2,16 +2,20 @@ import {
   BadRequestException,
   Injectable,
   NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { PrismaService } from 'src/prisma.service';
 import { CreatePostDto } from './dto/create.dto';
 import { EditPostDto } from './dto/edit.dto';
 import { AddLikePostDto } from './dto/addLike.dto';
 import { AddToBookmarkDto } from './dto/addBookmark.dto';
+import { UsersService } from 'src/users/users.service';
 
 @Injectable()
 export class PostService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private usersService: UsersService) { }
 
   public async getAllPosts() {
     return await this.prisma.post.findMany({
@@ -27,6 +31,11 @@ export class PostService {
   }
 
   public async createPost(payload: CreatePostDto) {
+
+    const userExists = await this.usersService.findUserById(payload.authorId);
+
+    if (!userExists) throw new UnauthorizedException('User not found');
+
     await this.prisma.post.create({
       data: {
         post: payload.post,
