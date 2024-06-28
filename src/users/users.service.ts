@@ -107,7 +107,7 @@ export class UsersService {
   }
 
   public async uploadAvatar(userId: number, avatar: Express.Multer.File) {
-    const avatarPath = this.fileService.createFile(UploadType.IMAGE, avatar[0]);
+    const avatarPath = this.fileService.createFile(UploadType.IMAGE, avatar);
     await this.prisma.user.update({
       where: {
         id: userId,

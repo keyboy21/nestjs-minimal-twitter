@@ -28,6 +28,7 @@ import { editUserBody, editUserDto, editUserPrivateSettingsBody, editUserPrivate
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ImageSizeConstants } from 'src/shared/constants';
 import { AvatarUploadDto, BackgroundUploadDto } from './dto/upload.dtos';
+import { diskStorage } from 'multer';
 
 @Controller('users')
 @ApiTags('users')
@@ -68,7 +69,18 @@ export class UsersController {
   }
 
   @Post('avatar/:userId')
-  @UseInterceptors(FileInterceptor('avatar'))
+  @UseInterceptors(FileInterceptor('avatar', 
+  //   {
+  //   storage: diskStorage({
+  //     destination: 'public/images',
+  //     filename: (req, file, cb) => {
+  //       const fileExtension = file.originalname.split('.').pop();
+  //       const fileName = crypto.randomUUID() + '.' + fileExtension;
+  //       cb(null, fileName);
+  //     },
+  //   })
+  // }
+))
   @ApiOperation({ summary: 'Upload avatar', description: 'Upload avatar' })
   @ApiConsumes('multipart/form-data')
   @ApiBody({
@@ -90,6 +102,10 @@ export class UsersController {
     )
     avatar: Express.Multer.File,
   ) {
+    // return {
+    //   statusCode: 200,
+    //   data: file.path,
+    // };
     return this.userService.uploadAvatar(userId, avatar);
   }
 

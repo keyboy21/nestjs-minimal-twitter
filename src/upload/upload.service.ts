@@ -13,7 +13,7 @@ export class UploadService {
     try {
       const fileExtension = file.originalname.split('.').pop();
       const fileName = crypto.randomUUID() + '.' + fileExtension;
-      const filePath = path.resolve(__dirname, '..', 'static', type);
+      const filePath = path.resolve(__dirname, '..', 'public', type);
       if (!fs.existsSync(filePath)) {
         fs.mkdirSync(filePath, { recursive: true });
       }
@@ -26,7 +26,7 @@ export class UploadService {
 
   removeFile(fileName: string) {
     try {
-      const filePath = path.resolve(__dirname, '..', 'static', fileName);
+      const filePath = path.resolve(__dirname, '..', 'public', fileName);
       fs.unlinkSync(filePath);
       return true;
     } catch (error) {
