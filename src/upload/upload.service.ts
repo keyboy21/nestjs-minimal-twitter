@@ -5,6 +5,8 @@ import crypto from 'node:crypto';
 
 export enum UploadType {
   IMAGE = 'image',
+  VIDEO = 'video',
+  DOCUMENT = 'document',
 }
 
 @Injectable()
