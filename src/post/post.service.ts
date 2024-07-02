@@ -107,16 +107,15 @@ export class PostService {
 
     const isPostOwner = postExists.authorId === authorId;
 
-    if (!isPostOwner)
-      throw new BadRequestException('You are not allowed to delete this post');
+    if (!isPostOwner) throw new BadRequestException('You are not allowed to delete this post');
 
-    const deleteLikes = this.prisma.like.deleteMany({
+    const deletePostLikes = this.prisma.like.deleteMany({
       where: {
         postId,
       },
     });
 
-    const deleteBookmarks = this.prisma.bookmark.deleteMany({
+    const deletePostBookmarks = this.prisma.bookmark.deleteMany({
       where: {
         postId,
       },
@@ -129,8 +128,8 @@ export class PostService {
     });
 
     const transaction = await this.prisma.$transaction([
-      deleteLikes,
-      deleteBookmarks,
+      deletePostLikes,
+      deletePostBookmarks,
       deletePost,
     ]);
 
@@ -140,13 +139,14 @@ export class PostService {
   }
 
   public async addLike({ postId, userId }: AddLikePostDto) {
-    const postExists = await this.prisma.post.count({
-      where: {
-        id: postId,
-      },
-    });
+    // TODO: Actually this check don't need
+    // const postExists = await this.prisma.post.count({
+    //   where: {
+    //     id: postId,
+    //   },
+    // });
 
-    if (postExists > 0) throw new NotFoundException('Post not found');
+    // if (postExists > 0) throw new NotFoundException('Post not found');
 
     const userAlreadyLiked = await this.prisma.like.count({
       where: {
@@ -169,13 +169,14 @@ export class PostService {
   }
 
   public async removeLike({ postId, userId }: AddLikePostDto) {
-    const postExists = await this.prisma.post.count({
-      where: {
-        id: postId,
-      },
-    });
+    // TODO: Actually this check don't need
+    // const postExists = await this.prisma.post.count({
+    //   where: {
+    //     id: postId,
+    //   },
+    // });
 
-    if (postExists > 0) throw new NotFoundException('Post not found');
+    // if (postExists > 0) throw new NotFoundException('Post not found');
 
     const userAlreadyLiked = await this.prisma.like.findFirst({
       where: {
@@ -195,13 +196,14 @@ export class PostService {
   }
 
   public async addToBookmark({ postId, userId }: AddToBookmarkDto) {
-    const postExists = await this.prisma.post.count({
-      where: {
-        id: postId,
-      },
-    });
+    // TODO: Actually this check don't need
+    // const postExists = await this.prisma.post.count({
+    //   where: {
+    //     id: postId,
+    //   },
+    // });
 
-    if (postExists > 0) throw new NotFoundException('Post not found');
+    // if (postExists > 0) throw new NotFoundException('Post not found');
 
     const userAlreadyBookmarked = await this.prisma.bookmark.count({
       where: {
@@ -222,13 +224,14 @@ export class PostService {
   }
 
   public async removeBookmark({ postId, userId }: AddToBookmarkDto) {
-    const postExists = await this.prisma.post.count({
-      where: {
-        id: postId,
-      },
-    });
+    // TODO: Actually this check don't need
+    // const postExists = await this.prisma.post.count({
+    //   where: {
+    //     id: postId,
+    //   },
+    // });
 
-    if (postExists > 0) throw new NotFoundException('Post not found');
+    // if (postExists > 0) throw new NotFoundException('Post not found');
 
     const userAlreadyBookmarked = await this.prisma.bookmark.findFirst({
       where: {
