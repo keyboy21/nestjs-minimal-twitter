@@ -40,7 +40,7 @@ export class AuthService {
   public async login(
     payload: loginUserDto,
   ): Promise<
-    { accesToken: string; refreshToken: string } | BadRequestException
+    { acces_token: string; refresh_token: string } | BadRequestException
   > {
     const findUserByUserName = await this.usersService.findUserByUserName(
       payload.userName,
@@ -83,9 +83,9 @@ export class AuthService {
   }
 
   private async generateToken(payload: AuthTokenPayload) {
-    const accesToken = this.jwtService.sign(payload, { expiresIn: '2d' });
-    const refreshToken = this.jwtService.sign(payload, { expiresIn: '1d' });
+    const acces_token = this.jwtService.sign(payload, { expiresIn: '2d' });
+    const refresh_token = this.jwtService.sign(payload, { expiresIn: '1d' });
 
-    return { accesToken, refreshToken };
+    return { acces_token, refresh_token };
   }
 }
